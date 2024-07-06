@@ -1,0 +1,70 @@
+CREATE TABLE users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(50) UNIQUE,
+    password VARCHAR(255), -- misalnya, panjang yang cukup untuk hash sandi
+    role ENUM('Admin', 'User')
+);
+
+INSERT INTO users (username, password, role) VALUES
+('asep_isan', 'hashed_password1', 'Admin'),
+('sani_budi', 'hashed_password2', 'User'),
+('lina_wardani', 'hashed_password3', 'User');
+
+CREATE TABLE profiles (
+    profile_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT,
+    full_name VARCHAR(100),
+    birthdate DATE,
+    bio TEXT,
+    FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
+INSERT INTO profiles (user_id, full_name, birthdate, bio) VALUES
+(1, 'Asep Isan', '1985-04-10', 'Administrator with extensive experience in IT management.'),
+(2, 'Sani Budi', '1992-11-23', 'User with a keen interest in software development.'),
+(3, 'Lina Wardani', '1998-07-05', 'Enthusiast in data analysis and machine learning.');
+
+CREATE TABLE posts (
+    post_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT,
+    title VARCHAR(200),
+    content TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
+INSERT INTO posts (user_id, title, content) VALUES
+(1, 'Understanding Databases', 'A comprehensive guide to SQL and NoSQL databases.'),
+(2, 'Web Development Trends', 'Latest trends in web development for 2024.'),
+(3, 'Data Science Tips', 'Effective tips and tricks for aspiring data scientists.');
+
+CREATE TABLE comments (
+    comment_id INT AUTO_INCREMENT PRIMARY KEY,
+    post_id INT,
+    user_id INT,
+    comment_text TEXT,
+    commented_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (post_id) REFERENCES posts(post_id),
+    FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
+INSERT INTO comments (post_id, user_id, comment_text) VALUES
+(1, 2, 'Very insightful and well-explained.'),
+(2, 3, 'Interesting read, I learned a lot.'),
+(3, 1, 'Great tips, very helpful for beginners.');
+
+SELECT u.username, p.full_name, p.bio
+FROM users u
+JOIN profiles p ON u.id = p.user_id;
+
+SELECT po.title, po.content, c.comment_text
+FROM posts po
+LEFT JOIN comments c ON po.post_id = c.post_id;
+
+SELECT u.username, p.full_name, p.bio
+FROM users u
+JOIN profiles p ON u.id = p.user_id;
+
+SELECT po.title, po.content, c.comment_text
+FROM posts po
+LEFT JOIN comments c ON po.post_id = c.post_id;
